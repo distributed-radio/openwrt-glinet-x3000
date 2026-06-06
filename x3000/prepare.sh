@@ -147,26 +147,6 @@ echo "==> Installing feeds.conf"
 sed "s|^src-link custom feeds-local\$|src-link custom $LOCAL|" \
     "$FEEDS_CONF_SRC" > "$ROOT/feeds.conf"
 
-# --- Compose .config from common + variant --------------------------------
-
-echo "==> Composing .config from config.common + config.$VARIANT$([ -f "$CONFIG_VARIANT_LOCAL" ] && echo " + config.$VARIANT.local")"
-{
-    cat "$CONFIG_COMMON"
-    echo
-    echo "# --- variant: $VARIANT ---"
-    cat "$CONFIG_VARIANT"
-    # Per-builder additions: x3000/config.<variant>.local is a gitignored
-    # slot for CONFIG_PACKAGE_… selections specific to your private build
-    # (e.g. private packages from custom-feeds.<variant>.local, or extra
-    # tooling you don't want in the public image).
-    if [[ -f "$CONFIG_VARIANT_LOCAL" ]]; then
-        echo
-        echo "# --- variant: $VARIANT.local ---"
-        cat "$CONFIG_VARIANT_LOCAL"
-    fi
-} > "$ROOT/.config"
-make defconfig FORCE=1 >/dev/null
-
 # --- Compose files/ overlay from files-common + files-<variant> ----------
 
 echo "==> Composing files/ from files-common + files-$VARIANT"
@@ -200,6 +180,32 @@ echo "==> feeds update -a"
 
 echo "==> feeds install -a"
 ./scripts/feeds install -a
+
+# --- Compose .config from common + variant --------------------------------
+#
+# This MUST run after feeds install: make defconfig silently drops
+# CONFIG_PACKAGE_ symbols for packages whose Makefiles are not yet
+# registered under package/feeds/, which is exactly the state custom-feed
+# packages are in on a fresh clone if the config is composed first.
+
+echo "==> Composing .config from config.common + config.$VARIANT$([ -f "$CONFIG_VARIANT_LOCAL" ] && echo " + config.$VARIANT.local")"
+{
+    cat "$CONFIG_COMMON"
+    echo
+    echo "# --- variant: $VARIANT ---"
+    cat "$CONFIG_VARIANT"
+    # Per-builder additions: x3000/config.<variant>.local is a gitignored
+    # slot for CONFIG_PACKAGE_… selections specific to your private build
+    # (e.g. private packages from custom-feeds.<variant>.local, or extra
+    # tooling you don't want in the public image).
+    if [[ -f "$CONFIG_VARIANT_LOCAL" ]]; then
+        echo
+        echo "# --- variant: $VARIANT.local ---"
+        cat "$CONFIG_VARIANT_LOCAL"
+    fi
+} > "$ROOT/.config"
+make defconfig FORCE=1 >/dev/null
+
 
 # --- Apply unified-diff patches against feed contents ---------------------
 #
