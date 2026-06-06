@@ -1,0 +1,20 @@
+# XE3000 (Puli) variant — composed on top of x3000/config.common by
+# prepare.sh. Flips the device target (later assignment wins in the
+# kconfig seed) and bakes the puli-custom project packages
+# (https://github.com/distributed-radio/puli-custom) into the image.
+
+# CONFIG_TARGET_mediatek_filogic_DEVICE_glinet_gl-x3000 is not set
+CONFIG_TARGET_mediatek_filogic_DEVICE_glinet_gl-xe3000=y
+
+# Battery management daemon (XE3000 has a Li-Ion pack + BMS MCU on UART1)
+CONFIG_PACKAGE_puli-bms-daemon=y
+CONFIG_PACKAGE_python3-light=y
+CONFIG_PACKAGE_python3-logging=y
+
+# On-box UE harness verbs + MHI wedge boot pin (puli-custom issue #1)
+CONFIG_PACKAGE_puli-ue-verbs=y
+CONFIG_PACKAGE_puli-pcie-pm-pin=y
+CONFIG_PACKAGE_iperf3=y
+
+# Lab base config (private feed — see custom-feeds.txt note)
+CONFIG_PACKAGE_puli-base-config=y

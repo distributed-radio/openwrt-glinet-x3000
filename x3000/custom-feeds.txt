@@ -32,3 +32,26 @@ quectel-5g-tools        https://github.com/vjt/quectel-5g-tools.git             
 
 # Prometheus collector for Wi-Fi dethrash detection across the fleet.
 wifi-dethrash-collector https://github.com/vjt/openwrt-dethrash.git                master  openwrt/wifi-dethrash-collector
+
+# --- XE3000 (Puli) additions — distributed-radio/puli-custom ---------------
+
+# quectel-5g-tools FORK (files-overlay on vjt 1.6.0): quectel-at --timeout,
+# scaled lua quiet-gap, quectel-scan wrapper. Same package name as upstream
+# so apk treats it as a clean upgrade. Overrides the vjt line above when
+# this file is processed (later symlink wins).
+quectel-5g-tools        git@github.com:distributed-radio/puli-custom.git      main    packages/quectel-5g-tools-overlay
+
+# BMS daemon for the XE3000 battery MCU (telemetry + safe-shutdown).
+puli-bms-daemon         git@github.com:distributed-radio/puli-custom.git      main    packages/puli-bms-daemon
+
+# On-box UE verbs (ue-status/attach/plumb/recover/hold/clean).
+puli-ue-verbs           git@github.com:distributed-radio/puli-custom.git      main    packages/puli-ue-verbs
+
+# Qualcomm PCIe endpoint runtime-PM boot pin (MHI wedge prevention).
+puli-pcie-pm-pin        git@github.com:distributed-radio/puli-custom.git      main    packages/puli-pcie-pm-pin
+
+# Lab base config (static LAN, ssh key, uci-defaults). PRIVATE repo —
+# requires ssh access to the distributed-radio org; without it, drop
+# this line + the CONFIG_PACKAGE_puli-base-config selection and bake
+# your own files-xe3000/.
+puli-base-config        git@github.com:distributed-radio/puli-custom.git          main    packages/puli-base-config

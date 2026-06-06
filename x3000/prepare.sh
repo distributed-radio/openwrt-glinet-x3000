@@ -38,9 +38,9 @@ set -euo pipefail
 
 VARIANT="${1:-private}"
 case "$VARIANT" in
-    private|public) ;;
+    private|public|xe3000) ;;
     *)
-        echo "usage: $0 [private|public]" >&2
+        echo "usage: $0 [private|public|xe3000]" >&2
         echo "  unknown variant: $VARIANT" >&2
         exit 2
         ;;

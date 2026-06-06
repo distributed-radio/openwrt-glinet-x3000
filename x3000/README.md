@@ -366,3 +366,22 @@ The `device` field must point at the modem's PHYSICAL parent
 (PCI device for MHI, USB device for cdc-wdm) — not its wwan/usbmisc
 child. The `readlink ... /../..` form above resolves to the right
 place for the GL-X3000's PCIe-attached RM520N.
+
+## XE3000 (Puli) variant — distributed-radio fork
+
+`xe3000` is a third prepare/build variant added on the
+[distributed-radio fork](https://github.com/distributed-radio/openwrt-glinet-x3000)
+(branch `xe3000`) targeting the GL-XE3000 (battery-powered Puli sibling),
+used as the `puli-test` 4G/5G test mule:
+
+    git clone -b xe3000 https://github.com/distributed-radio/openwrt-glinet-x3000.git
+    cd openwrt-glinet-x3000
+    x3000/prepare.sh xe3000
+    make -j$(nproc)
+
+Differences vs `public`: device target `glinet_gl-xe3000`; bakes the
+[puli-custom](https://github.com/distributed-radio/puli-custom) packages
+(puli-bms-daemon, puli-ue-verbs, puli-pcie-pm-pin) and the
+quectel-5g-tools files-overlay fork; ships lab base config via the private `puli-base-config` feed (ssh access to the distributed-radio org required; substitute your own `files-xe3000/` otherwise). Upstream `package/utils/adb` is removed on this
+branch (collides with the android-tools feed port). See the puli-custom
+repo wiki for the flash runbook (partition-preservation rules apply).
